@@ -163,7 +163,7 @@
       const password = document.getElementById("password").value.trim();
 
       try {
-        const response = await fetch("http://localhost:5000/api/login", { // Change URL as needed
+        const response = await fetch("http://localhost:5000/api/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -175,13 +175,15 @@
 
         if (response.ok) {
           alert("Login successful!");
-          window.location.href = "dashboard.html"; // Change to your actual dashboard route
+          window.location.href = "dashboard.html";
         } else {
           alert(data.message || "Invalid credentials");
+          location.reload(); // Refresh after OK
         }
       } catch (error) {
         console.error("Error during login:", error);
         alert("An error occurred. Please try again.");
+        location.reload(); // Refresh after error
       }
     }
   </script>
