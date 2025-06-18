@@ -128,6 +128,11 @@
       .namaste-gif {
         display: none;
       }
+
+      .login-box {
+        width: 90%;
+        padding: 2rem;
+      }
     }
   </style>
 </head>
@@ -137,7 +142,7 @@
   <div class="login-box">
     <img src="namate-gif-unscreen.gif" class="namaste-gif" alt="Namaste Girl" />
     <h2 class="loginheading">Login</h2>
-    <form id="loginForm" onsubmit="return handleLogin();">
+    <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="input-box">
         <input type="text" id="username" name="username" required>
         <label>Username</label>
@@ -151,22 +156,33 @@
   </div>
 
   <script>
-    function handleLogin() {
+    async function handleLogin(event) {
+      event.preventDefault();
+
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      const users = JSON.parse(localStorage.getItem("users")) || [];
+      try {
+        const response = await fetch("http://localhost:5000/api/login", { // Change URL as needed
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username, password })
+        });
 
-      const matchedUser = users.find(user => user.username === username && user.password === password);
+        const data = await response.json();
 
-      if (matchedUser) {
-        alert("Login successful!");
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Invalid credentials. Please try again.");
-        location.reload(); // Refresh page after alert
+        if (response.ok) {
+          alert("Login successful!");
+          window.location.href = "dashboard.html"; // Change to your actual dashboard route
+        } else {
+          alert(data.message || "Invalid credentials");
+        }
+      } catch (error) {
+        console.error("Error during login:", error);
+        alert("An error occurred. Please try again.");
       }
-      return false;
     }
   </script>
 </body>
