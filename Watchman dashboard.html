@@ -140,7 +140,6 @@
       to { left: 100%; }
     }
 
-    /* ===================== Responsive Media Queries ===================== */
     @media (max-width: 768px) {
       header {
         font-size: 1.2rem;
@@ -256,12 +255,47 @@
   </div>
 
   <script>
+    async function fetchPasses() {
+      try {
+        const res = await fetch('http://localhost:5000/api/watchman/passes');
+        const data = await res.json();
+        return data;
+      } catch (err) {
+        console.error('Failed to fetch passes:', err);
+        alert("Unable to load passes from server.");
+        return [];
+      }
+    }
 
-    function renderTable() {
+    async function markAsLeft(passId) {
+      try {
+        const res = await fetch('http://localhost:5000/api/watchman/mark-left', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: passId })
+        });
+
+        if (res.ok) {
+          alert("Student marked as left.");
+          loadPasses();
+        } else {
+          const error = await res.json();
+          alert("Failed to mark as left: " + error.message);
+        }
+      } catch (err) {
+        console.error("Error marking left:", err);
+        alert("Server error occurred.");
+      }
+    }
+
+    async function loadPasses() {
       const tbody = document.getElementById('passTableBody');
-      tbody.innerHTML = '';
-      passes.forEach((pass, index) => {
-        const row = document.createElement('tr');
+      tbody.innerHTML = "";
+
+      const passes = await fetchPasses();
+
+      passes.forEach((pass) => {
+        const row = document.createElement("tr");
         row.innerHTML = `
           <td>${pass.name}</td>
           <td>${pass.branch}</td>
@@ -270,19 +304,13 @@
           <td>${pass.time}</td>
           <td>${pass.reason}</td>
           <td>${pass.issued_by}</td>
-          <td><input type="checkbox" onchange="toggleLeft(${index})"></td>
+          <td><input type="checkbox" onchange="markAsLeft('${pass._id}')"></td>
         `;
         tbody.appendChild(row);
       });
     }
 
-    function toggleLeft(index) {
-      alert(`${passes[index].name} has left the campus.`);
-      passes.splice(index, 1);
-      renderTable();
-    }
-
-    window.onload = renderTable;
+    window.onload = loadPasses;
   </script>
 </body>
 </html>
