@@ -456,10 +456,12 @@ if (reason === "Others") {
     }
 
     function searchIssuedPass() {
-      const value = document.getElementById("searchRoll").value.trim().toUpperCase();
-      const filtered = allIssuedData.filter(pass => pass.rollno.toUpperCase() === value);
-      renderIssuedTable(filtered);
-    }
+  const value = document.getElementById("searchRoll").value.trim().toUpperCase();
+  const filtered = allIssuedData.filter(pass => pass.rollno.toUpperCase() === value);
+  renderIssuedTable(filtered);
+  alert(`No. of times student left in the month is ${filtered.length}`);
+}
+
 
     function resetIssuedPasses() {
       document.getElementById("searchRoll").value = "";
